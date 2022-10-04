@@ -4,6 +4,9 @@ from django.db import models
 from django.utils import  timezone
 
 class Question(models.Model):
+    """
+        Create a polls question that contain pub_date and was_published_recently method.
+    """
     question_text = models.CharField(max_length=200)
     pub_date = models.DateTimeField('date published')
 
