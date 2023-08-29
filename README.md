@@ -58,7 +58,7 @@ All project-related documents are in the [Project Wiki](../../wiki/Home)
 - [Vision Statement](../../wiki/Vision%20Statement)
 - [Requirements](../../wiki/Requirements)
 - [Development Plan](../../wiki/Development%20Plan)
-- [Iteration 1 Plan](../../wiki/Iteration%20plan%201) and [Task Board]([../../projects/4)
+- [Iteration 1 Plan](../../wiki/Iteration%20plan%201) and [Task Board]([users/caneledip/projects/4/views/1)
 
 [django-tutorial]: https://docs.djangoproject.com/en/3.1/intro/tutorial01/
 
