@@ -8,10 +8,6 @@ A polls application for [Individual Software Process](https://cpske.github.io/IS
 
 Requires Python 3.8 or newer.  Required Python packages are listed in [requirements.txt](./requirements.txt). 
 
-## Install and Configure the Application
-
-See [Installation](../../wiki/Installation) in the project wiki.
-
 
 ## Running the Application
 
@@ -44,13 +40,6 @@ See [Installation](../../wiki/Installation) in the project wiki.
    deactivate
    ```
 
-## Demo User Accounts
-
-Sample polls and users data are included. 
-
-* `demo1` password `Hackme1`
-* `demo2` password `Hackme2`
-
 ## Project Documents
 
 All project-related documents are in the [Project Wiki](../../wiki/Home)
@@ -61,4 +50,3 @@ All project-related documents are in the [Project Wiki](../../wiki/Home)
 - [Iteration 1 Plan](../../wiki/Iteration%20plan%201) and [Task Board](https://github.com/users/caneledip/projects/4)
 
 [django-tutorial]: https://docs.djangoproject.com/en/3.1/intro/tutorial01/
-
