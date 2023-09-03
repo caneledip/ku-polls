@@ -1,0 +1,6 @@
+li a{
+    color: green;
+}
+body{
+    background: rgb(218, 211, 211) url("images/background.jpg") 40% no-repeat;
+}
