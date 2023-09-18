@@ -1,11 +1,8 @@
 import datetime
-
 from django.utils import timezone
 from django.db import models
 
 # Create your models here.
-
-
 class Question(models.Model):
     """
     models of Question object that store question text as CharField and 
@@ -22,21 +19,23 @@ class Question(models.Model):
     def was_published_recently(self):
         """Method return boolean, either the question published within a day or not"""
         now = timezone.now()
-        return now - datetime.timedelta(days=1) <= self.pub_date <= now
+        return now - datetime.timedelta(hours=23, minutes=59, seconds=59) <= self.pub_date <= now
     
     def can_vote(self):
-        """Method return true if current time is in voting period."""
+        """Method return true if you can vote on poll question."""
         now = timezone.now()
-        if self.end_date is None:
-            return True
-        if self.pub_date <= now < self.end_date:
-            return True
+        if self.is_published():
+            if self.end_date is None:
+                return True
+            else:
+                return now <= self.end_date
+        else:
+            return False
 
     def is_published(self):
         """Method return true if question was published on or after current date and time."""
         now = timezone.now()
-        if self.pub_date < now:
-            return True
+        return now >= self.pub_date
 
 
 class Choice(models.Model):

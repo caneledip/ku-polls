@@ -13,8 +13,10 @@
                 <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br>
             {% endfor %}
         {% else %}
+            <meta http-equiv="refresh" content="3;URL={% url 'polls:index' %}"/>
             <h1>Sorry, you can not vote for this question</h1>
         {% endif %}
     </fieldset>
     <input type="submit" value="vote">
+    <a href="{% url 'polls:index' %}"> home </a>
 </form>
