@@ -112,7 +112,6 @@ class QuestionIndexViewTests(TestCase):
         If no questions exist, an appropriate message is displayed.
         """
         response = self.client.get(reverse('polls:index'))
-        print(response.content.decode()) 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, '<p>No polls are avaiable.</p>')
         self.assertQuerysetEqual(response.context['latest_question_list'], [])
@@ -136,7 +135,6 @@ class QuestionIndexViewTests(TestCase):
         """
         create_question(question_text="Future question.", days=30)
         response = self.client.get(reverse('polls:index'))
-        print(response.content.decode()) 
         self.assertContains(response, '<p>No polls are avaiable.</p>')
         self.assertQuerysetEqual(response.context['latest_question_list'], [])
 
