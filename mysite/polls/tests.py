@@ -263,12 +263,12 @@ class UserAuthTest(django.test.TestCase):
           or I receive a 403 response (FORBIDDEN)
         """
         vote_url = reverse('polls:vote', args=[self.question.id])
-
         # what choice to vote for?
         choice = self.question.choice_set.first()
         # the polls detail page has a form, each choice is identified by its id
         form_data = {"choice": f"{choice.id}"}
         response = self.client.post(vote_url, form_data)
+        print(response.content.decode()) 
         # should be redirected to the login page
         self.assertEqual(response.status_code, 302)  # could be 303
         # TODO: this fails because reverse('login') does not include
