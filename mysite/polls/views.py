@@ -44,7 +44,7 @@ def vote(request, question_id):
             'question': question, 'error_message': "You didn't select a choice.",
             })
     
-    vote = Vote.get_vote(question=question, user=user)
+    vote = Vote.objects.get(choice = question.choice_id, user=user)
     if vote:
         vote.choice = selected_choice
         messages.success(request, 'Vote updated')
