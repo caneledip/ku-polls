@@ -1,3 +1,4 @@
+
 {% load static %}
 <link rel="stylesheet" href="{% static 'polls/style.css' %}">
 
@@ -9,14 +10,7 @@
 
         {% if question.can_vote == True and question.is_published == True%}
             {% for choice in question.choice_set.all %}
-                {% if choice == selected_choice %}
-                    <input type="radio" name="choice" id="choice{{ forloop.counter }}" 
-                    value="{{choice.id}}"
-                    {% if choice.id == selected_choice %} checked=True {% endif %}
-                    />
-                {% else %}
-                <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{choice.id}}"/>
-                {% endif %}
+                    <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{choice.id}}"{% if choice.id ==  %} checked=True {% endif %}/>
                 <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br>
             {% endfor %}
         {% else %}
