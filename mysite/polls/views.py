@@ -26,6 +26,24 @@ class DetailView(generic.DetailView):
     
     def get_queryset(self) -> QuerySet[Any]:
         return Question.objects.filter(pub_date__lte = timezone.now())
+    
+    def get(self, request, *args, **kwargs):
+        question = self.get_object()
+
+        # Can you vote on this question?
+        if not question.can_vote():
+            messages.error(request, "Voting is not allowed for this question.")
+            return redirect('polls:index')
+
+        # Check for User vote on this question.
+        user_vote = None
+        if request.user.is_authenticated:
+            user_vote = Vote.objects.filter(user=request.user, choice__question=question).first()
+
+        return render(request, self.template_name, {
+            'question': question,
+            'previous_vote': user_vote,  # Pass the user's previous vote to the template
+        })
 
 class ResultsView(generic.DetailView):
     model = Question
@@ -35,7 +53,6 @@ class ResultsView(generic.DetailView):
 def vote(request, question_id):
     """ Get a question and vote for the choice"""
     question = get_object_or_404(Question, pk=question_id)
-    user = request.user
     try:
         selected_choice = question.choice_set.get(pk = request.POST['choice'])
     except (KeyError, Choice.DoesNotExist):
@@ -44,13 +61,23 @@ def vote(request, question_id):
             'question': question, 'error_message': "You didn't select a choice.",
             })
     
-    vote = Vote.objects.get(choice = question.choice_id, user=user)
-    if vote:
+    this_user = request.user
+
+    try:
+        # find a vote for this user and this question
+        vote = Vote.objects.get(user=this_user, choice__question=question)
+        # update this vote
         vote.choice = selected_choice
-        messages.success(request, 'Vote updated')
-    else:
-        vote = Vote(user=user, choice=selected_choice)
+        messages.success(request, f'Your Vote for "{question.question_text}" have been save')
+    except Vote.DoesNotExist:
+        # no matching vote - create a new vote
+        vote = Vote(user=this_user, choice=selected_choice)
         messages.success(request, 'Vote success')
-        vote.save()
-    next_url = request.POST.get('next', reverse('polls:results', args=(question.id,)))
+
+    # if vote:
+    #     vote.choice = selected_choice
+    #     messages.success(request, 'Vote updated')
+    # else:
+    #     vote = Vote(user=this_user, choice=selected_choice)
+    vote.save()
     return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))

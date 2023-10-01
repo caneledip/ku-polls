@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>KU Polls</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'polls/style.css' %}">
+</head>
+<body>
+    <div class="header">
+        {% if user.is_authenticated %}
+            {% if user.first_name %}
+                <p>Welcome back, {{ user.first_name }}</p>
+            {% else %}
+                <p>Welcome back, {{ user.username.title }}</p>
+            {% endif %}
+            <span style="float:right">
+            <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit">Logout</button>
+            </form>
+        {% else %}
+            <p>Welcome to KU Polls</p>
+            <span style="float:right">
+            <a href="{% url 'login' %}">
+                <button>Login</button>
+            </a>
+        {% endif %}
+    </div>
+
+    <h2>
+        {% block title %} {% endblock %}
+    </h2>
+    {% if messages %}
+    <ul class="messages">
+        {% for msg in messages %}
+            <li class="{{ msg.tags }}"><em>{{ msg }}</em></li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+</body>
+</html>

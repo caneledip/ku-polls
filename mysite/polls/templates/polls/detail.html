@@ -1,23 +1,35 @@
-
+{% extends "base.html" %}
 {% load static %}
 <link rel="stylesheet" href="{% static 'polls/style.css' %}">
 
+{% block content %}
+
 <form action="{%url 'polls:vote' question.id %}" method="post">
     {%csrf_token%}
+
     <fieldset>
         <legend><h1>{{question.question_text }}</h1></legend>
         {% if error_message %}<p><strong>{{error_message}}</strong></p>{% endif %}
 
         {% if question.can_vote == True and question.is_published == True%}
-            {% for choice in question.choice_set.all %}
-                    <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{choice.id}}"{% if choice.id ==  %} checked=True {% endif %}/>
-                <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br>
-            {% endfor %}
+        {% for choice in question.choice_set.all %}
+                <input type="radio" 
+                name="choice" id="choice{{ forloop.counter }}" 
+                value="{{choice.id}}"
+                {% if previous_vote and choice.id == previous_vote.choice_id %} checked=True {% endif %}/>
+            <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br>
+        {% endfor %}
         {% else %}
             <meta http-equiv="refresh" content="3;URL={% url 'polls:index' %}"/>
             <h1>Sorry, you can not vote for this question</h1>
         {% endif %}
     </fieldset>
-    <input type="submit" value="vote">
+    {% if user.is_authenticated %}
+        <input type="submit" value="Vote">
+    {% else %}
+        Please <a href="{% url 'login' %}?next={{request.path}}">Login</a> to submit a vote.
+    {% endif %}
     <a href="{% url 'polls:index' %}"> home </a>
 </form>
+
+{% endblock %}
