@@ -1,4 +1,6 @@
+{% extends "base.html"%}
 {% load static %}
+{% block content %}
 <link rel="stylesheet" href="{% static 'polls/style.css' %}">
 
 <h1>{{ question.question_text }}</h1>
@@ -11,3 +13,4 @@
 
 <a href="{% url 'polls:detail' question.id %}"> Vote again?</a><br>
 <a href="{% url 'polls:index' %}"> home </a>
+{% endblock%}

@@ -1,6 +1,8 @@
-
+{% extends "base.html" %}
 {% load static %}
 <link rel="stylesheet" href="{% static 'polls/style.css' %}">
+
+{% block content %}
 
 <form action="{%url 'polls:vote' question.id %}" method="post">
     {%csrf_token%}
@@ -14,7 +16,7 @@
                 <input type="radio" 
                 name="choice" id="choice{{ forloop.counter }}" 
                 value="{{choice.id}}"
-                {% if user_vote and choice.id == user_vote.choice_id %} checked=True {% endif %}/>
+                {% if previous_vote and choice.id == previous_vote.choice_id %} checked=True {% endif %}/>
             <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br>
         {% endfor %}
         {% else %}
@@ -29,3 +31,5 @@
     {% endif %}
     <a href="{% url 'polls:index' %}"> home </a>
 </form>
+
+{% endblock %}
