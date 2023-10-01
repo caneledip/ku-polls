@@ -67,7 +67,7 @@ class Vote(models.Model):
         
         :param question: a Question to get user's vote for
         :param user: a User whose vote to return
-        :returns: the user's vote for the requested question, or None if no vote\
+        :returns: the user's vote for the requested question, or None if no vote
         """
         if not user or not user.is_authenticated:
             return None

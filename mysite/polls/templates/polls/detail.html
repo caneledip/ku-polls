@@ -10,7 +10,10 @@
         {% if question.can_vote == True and question.is_published == True%}
             {% for choice in question.choice_set.all %}
                 {% if choice == selected_choice %}
-                    <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{choice.id}}" checked="checked"/>
+                    <input type="radio" name="choice" id="choice{{ forloop.counter }}" 
+                    value="{{choice.id}}"
+                    {% if choice.id == selected_choice %} checked=True {% endif %}
+                    />
                 {% else %}
                 <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{choice.id}}"/>
                 {% endif %}

@@ -51,6 +51,6 @@ def vote(request, question_id):
     else:
         vote = Vote(user=user, choice=selected_choice)
         messages.success(request, 'Vote success')
-    vote.save()
+        vote.save()
     next_url = request.POST.get('next', reverse('polls:results', args=(question.id,)))
     return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
