@@ -2,7 +2,8 @@
 <link rel="stylesheet" href="{% static 'polls/style.css' %}">
 
 {% if user.is_authenticated %}
-   Welcome back, {{ user.username }} 
+   Welcome back, {{ user.username }}
+   <a href="{% url 'logout' %}?next={{request.path}}">Logout</a>
 {% else %}
    Please <a href="{% url 'login' %}?next={{request.path}}">Login</a>
 {% endif %}

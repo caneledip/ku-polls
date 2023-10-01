@@ -9,7 +9,7 @@ from django.views import generic
 from django.utils import timezone
 from .models import Question, Choice, Vote
 from django.contrib.auth.decorators import login_required
-
+from django.contrib import messages
 
 # Create your views here.
 class IndexView(generic.ListView):
@@ -33,10 +33,9 @@ class ResultsView(generic.DetailView):
 
 @login_required
 def vote(request, question_id):
+    """ Get a question and vote for the choice"""
     question = get_object_or_404(Question, pk=question_id)
     user = request.user
-    if not user.is_authenticated:
-       return redirect('login')
     try:
         selected_choice = question.choice_set.get(pk = request.POST['choice'])
     except (KeyError, Choice.DoesNotExist):
@@ -44,16 +43,14 @@ def vote(request, question_id):
         return render(request, 'polls/detail.html', {
             'question': question, 'error_message': "You didn't select a choice.",
             })
-        # selected_choice.votes+=1
-        # selected_choice.save()
-        # Always return an HttpResponseRedirect after successfully dealing with POST data.
-        # This prevents data from being posted twice if a user hits the Back button
-    this_user = request.user
-    try:
-        vote = Vote.objects.get(user=this_user, choice=selected_choice)
-        vote_choice = selected_choice
-    except:
-        vote = Vote(user=this_user, choice=selected_choice)
-
+    
+    vote = Vote.get_vote(question=question, user=user)
+    if vote:
+        vote.choice = selected_choice
+        messages.success(request, 'Vote updated')
+    else:
+        vote = Vote(user=user, choice=selected_choice)
+        messages.success(request, 'Vote success')
     vote.save()
+    next_url = request.POST.get('next', reverse('polls:results', args=(question.id,)))
     return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
