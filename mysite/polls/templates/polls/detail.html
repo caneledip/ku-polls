@@ -1,6 +1,8 @@
-
+{% extends "base.html" %}
 {% load static %}
 <link rel="stylesheet" href="{% static 'polls/style.css' %}">
+
+{% block content %}
 
 <form action="{%url 'polls:vote' question.id %}" method="post">
     {%csrf_token%}
@@ -29,3 +31,5 @@
     {% endif %}
     <a href="{% url 'polls:index' %}"> home </a>
 </form>
+
+{% endblock %}

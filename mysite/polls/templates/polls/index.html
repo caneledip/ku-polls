@@ -1,20 +1,21 @@
 {% load static %}
 <link rel="stylesheet" href="{% static 'polls/style.css' %}">
-
+{% block content %}
 {% if user.is_authenticated %}
-   Welcome back, {{ user.username }}
-   <a href="{% url 'logout' %}?next={{request.path}}">Logout</a>
+Welcome back, {{ user.username }}
+<a href="{% url 'logout' %}?next={{request.path}}">Logout</a>
 {% else %}
-   Please <a href="{% url 'login' %}?next={{request.path}}">Login</a>
+Please <a href="{% url 'login' %}?next={{request.path}}">Login</a>
 {% endif %}
 
 {% if latest_question_list %}
-    <ul>
+<ul>
     {% for question in latest_question_list %}
-        <li><a href="{% url 'polls:detail' question.id %}"><h2>{{ question.question_text }}</h2></a></li>
-        <li><a href="{% url 'polls:results' question.id %}"><h3>result</h3></a></li><br>
+    <li><a href="{% url 'polls:detail' question.id %}"><h2>{{ question.question_text }}</h2></a></li>
+    <li><a href="{% url 'polls:results' question.id %}"><h3>result</h3></a></li><br>
     {% endfor %}
-    </ul>
+</ul>
 {% else %}
-    <p>No polls are avaiable.</p>
+<p>No polls are avaiable.</p>
 {% endif %}
+{% endblock %}
