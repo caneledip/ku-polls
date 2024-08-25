@@ -6,6 +6,7 @@ from django.urls import reverse
 
 from .models import Question, Choice
 
+
 def create_question(question_text, days):
     """
     Create a question with the given 'question_text' and published the given number of 'days'
@@ -21,7 +22,12 @@ def create_choice(Question, vote=0):
     choice = Question.choice_set.create(choice_text="Choice 1", votes=vote)
     return choice
 
+
 class QuestionModelTests(TestCase):
+    """
+    Model testing class for Question.
+    Test on was_published_recently method.
+    """
     def test_was_published_recently_with_future_question(self):
         """
         was_published_recently() returns False for question whose pub_date is in the future.
@@ -30,7 +36,7 @@ class QuestionModelTests(TestCase):
         future_question = Question(pub_date = time)
         self.assertIs(future_question.was_published_recently(), False)
 
-    def test_was_published_recently_with_old_question(self):
+    def test_was_published_recently_with_old_question_after_1_day(self):
         """
         was_published_recently() returns False for questions whose pub_date is older than 1 day.
         """
@@ -38,7 +44,7 @@ class QuestionModelTests(TestCase):
         old_question = Question(pub_date=time)
         self.assertIs(old_question.was_published_recently(), False)
 
-    def test_was_published_recently_with_old_question(self):
+    def test_was_published_recently_with_old_question_within_q_day(self):
         """
         was_published_recently() returns True for questions whose pub_date is within the last day.
         """
@@ -46,7 +52,11 @@ class QuestionModelTests(TestCase):
         recent_question = Question(pub_date=time)
         self.assertIs(recent_question.was_published_recently(), True)
 
+
 class QuestionIndexViewTests(TestCase):
+    """
+    Test on Index page displaying the correct polls.
+    """
     def test_no_questions(self):
         """
         If no questions exist, an appropriate message is displayed.
@@ -103,7 +113,11 @@ class QuestionIndexViewTests(TestCase):
             [question2, question1],
         )
 
+
 class QuestionDetailViewTests(TestCase):
+    """
+    Test on detail page showing correct poll question detail, and not showing future poll.
+    """
     def test_future_question(self):
         """
         The detail view of a question with a pub_date in the future returns a 404 not found.
@@ -124,6 +138,9 @@ class QuestionDetailViewTests(TestCase):
 
 
 class QuestionResultsTest(TestCase):
+    """
+    Test result page show correct vote result and can vote again.
+    """
     def test_result_from_voted_question(self):
         """
         The results view of a question that have been voted on is display
@@ -159,9 +176,15 @@ class QuestionResultsTest(TestCase):
         self.assertContains(vote_again_response, question.question_text)
 
 
-
 class VoteTests(TestCase):
+    """
+    Test of vote feature. Vote increase after being vote, vote redirect to result page after voting,
+    vote without selected choice don't go through.
+    """
     def test_vote_choice(self):
+        """
+        Test if the votes increase after user vote for that choice.
+        """
         question = create_question("Question", days=1)
         choice1 = create_choice(question)
         
@@ -170,15 +193,18 @@ class VoteTests(TestCase):
             reverse("polls:vote", args=(question.id,)),
             {"choice": choice1.id}
         )
-        
+
         # Check if the vote was incremented
         choice1.refresh_from_db()
         self.assertEqual(choice1.votes, 1)
 
     def test_vote_redirect(self):
+        """
+        Ensure that you are redirect to results page after voting.
+        """
         question = create_question("Question", days=1)
         choice1 = create_choice(question)
-        
+
         # Simulate voting on the choice1
         response = self.client.post(
             reverse("polls:vote", args=(question.id,)),
@@ -197,7 +223,7 @@ class VoteTests(TestCase):
         question = create_question("Sample Question", days=1)
         choice1 = create_choice(question)
         choice2 = create_choice(question)
-        
+
         # Simulate submitting an empty choice
         response = self.client.post(
             reverse("polls:vote", args=(question.id,)),  # Use the correct URL for voting
