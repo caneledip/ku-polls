@@ -4,7 +4,7 @@ from django.test import TestCase
 from django.utils import timezone
 from django.urls import reverse
 
-from .models import Question
+from .models import Question, Choice
 
 def create_question(question_text, days):
     """
@@ -13,6 +13,13 @@ def create_question(question_text, days):
     """
     time = timezone.now() + datetime.timedelta(days=days)
     return Question.objects.create(question_text=question_text, pub_date=time)
+
+def create_choice(Question, vote=0):
+    """
+    Create a choice for question with given choice_text
+    """
+    choice = Question.choice_set.create(choice_text="Choice 1", votes=vote)
+    return choice
 
 class QuestionModelTests(TestCase):
     def test_was_published_recently_with_future_question(self):
@@ -114,3 +121,91 @@ class QuestionDetailViewTests(TestCase):
         url = reverse("polls:detail", args=(past_question.id,))
         response = self.client.get(url)
         self.assertContains(response, past_question.question_text)
+
+
+class QuestionResultsTest(TestCase):
+    def test_result_from_voted_question(self):
+        """
+        The results view of a question that have been voted on is display
+        """
+        question = create_question("Question", days=1)
+        choice1 = create_choice(question, 2)
+        choice2 = create_choice(question, 4)
+
+        response = self.client.get(reverse("polls:results", args=(question.id,)))
+        self.assertContains(response, f"{choice1.choice_text} -- 2 vote")
+        self.assertContains(response, f"{choice2.choice_text} -- 4 votes")
+
+    def test_return_to_vote_with_vote_again_button(self):
+        """
+        Vote again button should redirect back to Polls vote page.
+        """
+        question = create_question("Question", days=1)
+        choice1 = create_choice(question)
+
+        # Simulate voting
+        self.client.post(reverse("polls:vote", args=(question.id,)), {"choice": choice1.id})
+        response = self.client.get(reverse("polls:results", args=(question.id,)))
+
+        # Ensure the "Vote again?" link is present in the results page
+        vote_again_url = reverse("polls:detail", args=(question.id,))
+        self.assertContains(response, f'href="{vote_again_url}"')
+
+        # Simulate clicking the "Vote again?" link
+        vote_again_response = self.client.get(vote_again_url)
+
+        # Check if the detail page loads correctly
+        self.assertEqual(vote_again_response.status_code, 200)
+        self.assertContains(vote_again_response, question.question_text)
+
+
+
+class VoteTests(TestCase):
+    def test_vote_choice(self):
+        question = create_question("Question", days=1)
+        choice1 = create_choice(question)
+        
+        # Simulate voting on the choice1
+        response = self.client.post(
+            reverse("polls:vote", args=(question.id,)),
+            {"choice": choice1.id}
+        )
+        
+        # Check if the vote was incremented
+        choice1.refresh_from_db()
+        self.assertEqual(choice1.votes, 1)
+
+    def test_vote_redirect(self):
+        question = create_question("Question", days=1)
+        choice1 = create_choice(question)
+        
+        # Simulate voting on the choice1
+        response = self.client.post(
+            reverse("polls:vote", args=(question.id,)),
+            {"choice": choice1.id}
+        )
+
+        # Check if it redirects to the results page
+        self.assertRedirects(response, reverse("polls:results", args=(question.id,)))
+
+    def test_vote_without_selecting_choice(self):
+        """
+        Ensure that submitting the vote form without selecting a choice
+        redisplays the question form with an appropriate error message.
+        """
+        # Create a sample question and choices
+        question = create_question("Sample Question", days=1)
+        choice1 = create_choice(question)
+        choice2 = create_choice(question)
+        
+        # Simulate submitting an empty choice
+        response = self.client.post(
+            reverse("polls:vote", args=(question.id,)),  # Use the correct URL for voting
+            {}  # No choice selected
+        )
+
+        # Check that the form is redisplayed with an error message
+        self.assertEqual(response.status_code, 200)  # Ensure status code is 200 OK
+        # check contain from &#x27; (html encoding of "'")
+        self.assertContains(response, "You didn&#x27;t select a choice.")
+        self.assertTemplateUsed(response, "polls/detail.html")
