@@ -5,10 +5,17 @@ ul {
 }
 
 li {
-    list-style-type: none;  /* Remove default bullet points */
-    margin-bottom: 10px;   /* Space between list items */
-    font-size: 1.2rem; /* Size relative to root font size */
+    display: grid;          /* Use grid layout for precise column alignment */
+    grid-template-columns: 1fr auto; /* Define two columns: one flexible, one auto-sized */
+    gap: 1em;               /* Space between columns */
+    margin-bottom: 10px;    /* Space between list items */
+    font-size: 1.2rem;      /* Size relative to root font size */
 }
+
+li .vote-count {
+    text-align: right;      /* Align vote count to the right */
+}
+
 
 ul a {
     text-decoration: none;  /* Remove underline from links */
