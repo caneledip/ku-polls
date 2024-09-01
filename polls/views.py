@@ -1,6 +1,5 @@
-from typing import Any
+"""Module for polls application view"""
 from django.db.models import F
-from django.db.models.query import QuerySet
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse

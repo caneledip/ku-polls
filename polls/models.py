@@ -41,6 +41,7 @@ class Question(models.Model):
             return self.pub_date <= timezone.now()
         return self.pub_date <= timezone.now() <= self.end_date
 
+
 class Choice(models.Model):
     """
     Choice model for database table.
