@@ -1,6 +1,5 @@
-from typing import Any
+"""Module for polls application view"""
 from django.db.models import F
-from django.db.models.query import QuerySet
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
@@ -9,18 +8,26 @@ from django.views import generic
 
 from .models import Choice, Question
 
-# Create your views here.
+
 class IndexView(generic.ListView):
+    """A generic view for index page.
+    
+    It show last 5 published polls question order by
+    publication date.
+    """
     template_name = "polls/index.html"
     context_object_name = "latest_question_list"
 
     def get_queryset(self):
         """Return the last five published questions."""
-        return Question.objects.filter(pub_date__lte=timezone.now()).order_by("-pub_date")[
-            :5
-        ]
+        return Question.objects.filter(pub_date__lte=timezone.now()).order_by("-pub_date")[:5]
+
 
 class DetailView(generic.DetailView):
+    """A generic view for poll detail page.
+    
+    Contain method for filtering only published question.
+    """
     model = Question
     template_name = "polls/detail.html"
 
@@ -30,12 +37,25 @@ class DetailView(generic.DetailView):
         """
         return Question.objects.filter(pub_date__lte=timezone.now())
 
+
 class ResultsView(generic.DetailView):
+    """A view of results page."""
     model = Question
     template_name = "polls/results.html"
 
+
 def vote(request, question_id):
+    """Method for vote feature of the poll app.
+    
+    If the question can not be vote, interaction will return
+    user to index page. If poll is available, user can vote
+    on poll's choice and submit it.
+    """
     question = get_object_or_404(Question, pk=question_id)
+
+    if not question.can_vote():
+        # prevent voting on end question
+        return HttpResponseRedirect(reverse("polls:index"))
     try:
         selected_choice = question.choice_set.get(pk=request.POST["choice"])
     except(KeyError, Choice.DoesNotExist):
@@ -44,12 +64,14 @@ def vote(request, question_id):
             request,
             "polls/detail.html",
             {
-                "question" : question,
-                "error_message" : "You didn't select a choice."
+                "question": question,
+                "error_message": "You didn't select a choice."
             },
         )
-    else:
-        selected_choice.votes = F("votes") + 1
-        selected_choice.save()
-        # Always return an HttpResponseRedirect after successfully dealing with POST data. This prevents data from being posted twice if a user hits the Back button.
-        return HttpResponseRedirect(reverse("polls:results", args=(question.id,)))
+
+    selected_choice.votes = F("votes") + 1
+    selected_choice.save()
+    # Always return an HttpResponseRedirect after successfully dealing
+    # with POST data. This prevents data from being posted twice if a
+    # user hits the Back button.
+    return HttpResponseRedirect(reverse("polls:results", args=(question.id,)))

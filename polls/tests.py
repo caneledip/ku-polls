@@ -150,30 +150,8 @@ class QuestionResultsTest(TestCase):
         choice2 = create_choice(question, 4)
 
         response = self.client.get(reverse("polls:results", args=(question.id,)))
-        self.assertContains(response, f"{choice1.choice_text} -- 2 vote")
-        self.assertContains(response, f"{choice2.choice_text} -- 4 votes")
-
-    def test_return_to_vote_with_vote_again_button(self):
-        """
-        Vote again button should redirect back to Polls vote page.
-        """
-        question = create_question("Question", days=1)
-        choice1 = create_choice(question)
-
-        # Simulate voting
-        self.client.post(reverse("polls:vote", args=(question.id,)), {"choice": choice1.id})
-        response = self.client.get(reverse("polls:results", args=(question.id,)))
-
-        # Ensure the "Vote again?" link is present in the results page
-        vote_again_url = reverse("polls:detail", args=(question.id,))
-        self.assertContains(response, f'href="{vote_again_url}"')
-
-        # Simulate clicking the "Vote again?" link
-        vote_again_response = self.client.get(vote_again_url)
-
-        # Check if the detail page loads correctly
-        self.assertEqual(vote_again_response.status_code, 200)
-        self.assertContains(vote_again_response, question.question_text)
+        self.assertContains(response, f"{choice1.choice_text} -- 2")
+        self.assertContains(response, f"{choice2.choice_text} -- 4")
 
 
 class VoteTests(TestCase):
@@ -235,3 +213,50 @@ class VoteTests(TestCase):
         # check contain from &#x27; (html encoding of "'")
         self.assertContains(response, "You didn&#x27;t select a choice.")
         self.assertTemplateUsed(response, "polls/detail.html")
+
+
+class QuestionIsPublished(TestCase):
+    """
+    Test is_published method in Question Model.
+    
+    is_published should return True if question was published on or before
+    current time, and should return False if question pub_date is in the
+    future.
+    """
+    def test_is_published_on_published_question(self):
+        """Test is_published method on published question."""
+        question = create_question("Published Question", days=-1)
+        self.assertTrue(question.is_published())
+
+    def test_is_published_on_unpublished_question(self):
+        """Test is_published method on unpublished question."""
+        question = create_question("Unpublished Question", days=10)
+        self.assertFalse(question.is_published())
+
+    def test_is_published_on_recently_published_question(self):
+        """Test is_published method on unpublished question."""
+        question = create_question("Unpublished Question", days=0)
+        self.assertTrue(question.is_published())
+
+
+class TestCanVote(TestCase):
+    """Test can_vote to check polls availability.
+    
+    can_vote return True when the poll is published and it is
+    not end, and should return False if it is not in voting
+    period."""
+    def test_can_vote_on_available_poll(self):
+        """Test can_vote on poll that is available for vote."""
+        question = create_question("Available question", days=-2)
+        self.assertTrue(question.can_vote())
+
+    def test_can_vote_on_unavailable_poll(self):
+        """Test can_vote on poll that is not available for vote."""
+        question = create_question("Unavailable question", days=2)
+        self.assertFalse(question.can_vote())
+
+    def test_can_vote_on_ending_poll(self):
+        """Test can_vote on poll that is already over."""
+        question = create_question("End question", days=-5)
+        question.end_date = timezone.now()-datetime.timedelta(days=1)
+        self.assertFalse(question.can_vote())

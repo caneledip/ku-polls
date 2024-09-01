@@ -2,12 +2,17 @@
 
 <link rel="stylesheet" href="{% static 'polls/style3.css'%}">
 
-<h1> {{ question.question_text }}</h1>
+<h1>{{ question.question_text }}</h1>
 
 <ul>
     {% for choice in question.choice_set.all %}
-        <li>{{choice.choice_text}} -- {{choice.votes}} vote{{choice.votes|pluralize}}</li>
+        <li>
+            <span class="choice-text">{{ choice.choice_text }}</span>
+            <span class="vote-count">{{ choice.votes }}</span>
+        </li>
     {% endfor %}
 </ul>
 
-<a href="{% url 'polls:detail' question.id %}">Vote again?</a>
+<ul>
+    <a href="{% url 'polls:index' %}" class="button">Polls Index</a>
+</ul>
