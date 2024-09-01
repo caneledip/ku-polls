@@ -29,6 +29,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
+# ALLOWED_HOSTS is a comma-separated list of hosts that can access the app.
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', 
                        default='localhost,127.0.0.1', 
                        cast=Csv())
@@ -112,7 +113,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'Asia/Bangkok'
+# Your timezone
+TIME_ZONE = config('TIMEZONE', default='Asia/Bangkok')
 
 USE_I18N = True
 
