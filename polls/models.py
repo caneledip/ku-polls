@@ -37,7 +37,9 @@ class Question(models.Model):
 
         Return True if current datetime is in a voting period.
         """
-        return self.pub_date <= timezone.now() < self.end_date
+        if self.end_date is None:
+            return self.pub_date <= timezone.now()
+        return self.pub_date <= timezone.now() <= self.end_date
 
 class Choice(models.Model):
     """
