@@ -1,7 +1,52 @@
-li a {
-    color: green;
+ul {
+    list-style-type: none;  /* Remove default bullet points */
+    padding: 0;             /* Remove default padding */
+    margin: 0;              /* Remove default margin */
+}
+
+li {
+    margin-bottom: 10px;   /* Space between list items */
+    font-size: 1.2rem; /* Size relative to root font size */
+}
+
+ul a {
+    text-decoration: none;  /* Remove underline from links */
+    color: #1a8342;         /* Set link color */
+}
+
+ul a:hover {
+    text-decoration: underline;  /* Add underline on hover */
 }
 
 body {
-    background: white url("images/bg4.jpg") no-repeat;
+    font-size: 16px; /* Base size */
+    background: white url("images/bg4.jpeg") no-repeat;
+}
+
+a {
+    font-size: 1.2rem; /* Size relative to root font size */
+}
+
+.button {
+    display: inline-block;  /* Allow padding and background styles */
+    padding: 10px 20px;     /* Add padding for button appearance */
+    font-size: 16px;        /* Set font size */
+    text-align: center;     /* Center text inside button */
+    text-decoration: none;  /* Remove underline from links */
+    color: white;           /* Text color */
+    background-color: #007bff; /* Background color */
+    border: none;           /* Remove border */
+    border-radius: 5px;    /* Rounded corners */
+    transition: background-color 0.3s; /* Smooth background color transition */
+}
+
+/* Hover effect for buttons */
+.button:hover {
+    background-color: #0056b3; /* Darker background on hover */
+}
+
+/* Style for empty state */
+p {
+    font-size: 1.2em;       /* Font size for the no content message */
+    color: #888;            /* Gray color for less emphasis */
 }
