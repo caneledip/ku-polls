@@ -83,7 +83,7 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 DATABASES = {
      # use cast=db_url requires package dj-database-url
      'default': config('DATABASE_URL', 
-                    default="sqlite:///{+BASE_DIR+'db.sqlite3'}",
+                    default="sqlite:///{'db.sqlite3'}",
                     cast=db_url
                 ),
      }
