@@ -6,10 +6,10 @@
 
 <ul>
     {% for choice in question.choice_set.all %}
-        <ul>{{choice.choice_text}} -- {{choice.votes}}</ul>
+        <li>{{choice.choice_text}} -- {{choice.votes}}</li>
     {% endfor %}
 </ul>
 
-<li>
+<ul>
     <a href="{% url 'polls:index' %}" class="button">Polls Index</a>
-</li>
+</ul>

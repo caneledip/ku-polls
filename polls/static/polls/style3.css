@@ -5,13 +5,14 @@ ul {
 }
 
 li {
+    list-style-type: none;  /* Remove default bullet points */
     margin-bottom: 10px;   /* Space between list items */
     font-size: 1.2rem; /* Size relative to root font size */
 }
 
 ul a {
     text-decoration: none;  /* Remove underline from links */
-    color: #1a8342;         /* Set link color */
+    color: #1a8342 ;         /* Set link color */
 }
 
 ul a:hover {
@@ -20,11 +21,12 @@ ul a:hover {
 
 body {
     font-size: 16px; /* Base size */
-    background: white url("images/bg4.jpeg") no-repeat;
+    background: white url("images/bg4.jpg") no-repeat;
 }
 
 a {
     font-size: 1.2rem; /* Size relative to root font size */
+    color: green;
 }
 
 .button {
@@ -43,10 +45,4 @@ a {
 /* Hover effect for buttons */
 .button:hover {
     background-color: #0056b3; /* Darker background on hover */
-}
-
-/* Style for empty state */
-p {
-    font-size: 1.2em;       /* Font size for the no content message */
-    color: #888;            /* Gray color for less emphasis */
 }
