@@ -6,11 +6,13 @@ additional features.
 
 ## Installation
 
-To be added. If the procedure is long, put it in the wiki or a separate file.
+- [Installation](../../wiki/Installation)
 
 ## Running the Application
 
-To be added.
+```
+python manage.py runserver
+```
 
 ## Project Documents
 
@@ -19,3 +21,5 @@ All project documents are in the [Project Wiki](../../wiki/Home).
 - [Vision Statement](../../wiki/Vision%20Statement)
 - [Requirements](../../wiki/Requirements)
 - [Project Plan](../../wiki/Project%20Plan)
+- [Iteration 1](../../wiki/Iteration%201)
+- [Iteration 2](../../wiki/Iteration%202)
