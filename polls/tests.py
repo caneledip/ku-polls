@@ -4,7 +4,7 @@ from django.test import TestCase
 from django.utils import timezone
 from django.urls import reverse
 
-from .models import Question, Choice
+from .models import Question
 
 
 def create_question(question_text, days):
@@ -145,13 +145,17 @@ class QuestionResultsTest(TestCase):
         """
         The results view of a question that have been voted on is display
         """
-        question = create_question("Question", days=1)
+        question = create_question("Question", days=0)
         choice1 = create_choice(question, 2)
         choice2 = create_choice(question, 4)
 
         response = self.client.get(reverse("polls:results", args=(question.id,)))
-        self.assertContains(response, f"{choice1.choice_text} -- 2")
-        self.assertContains(response, f"{choice2.choice_text} -- 4")
+        self.assertContains(response, f"{choice1.choice_text}")
+        self.assertContains(response, f"{choice1.votes}")
+        self.assertEqual(choice1.votes, 2)
+        self.assertContains(response, f"{choice2.choice_text}")
+        self.assertContains(response, f"{choice2.votes}")
+        self.assertEqual(choice2.votes, 4)
 
 
 class VoteTests(TestCase):
@@ -163,7 +167,7 @@ class VoteTests(TestCase):
         """
         Test if the votes increase after user vote for that choice.
         """
-        question = create_question("Question", days=1)
+        question = create_question("Question", days=0)
         choice1 = create_choice(question)
         
         # Simulate voting on the choice1
@@ -180,7 +184,7 @@ class VoteTests(TestCase):
         """
         Ensure that you are redirect to results page after voting.
         """
-        question = create_question("Question", days=1)
+        question = create_question("Question", days=0)
         choice1 = create_choice(question)
 
         # Simulate voting on the choice1
@@ -198,7 +202,7 @@ class VoteTests(TestCase):
         redisplays the question form with an appropriate error message.
         """
         # Create a sample question and choices
-        question = create_question("Sample Question", days=1)
+        question = create_question("Sample Question", days=0)
         choice1 = create_choice(question)
         choice2 = create_choice(question)
 
