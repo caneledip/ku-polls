@@ -1,4 +1,6 @@
 """Module for polls application view"""
+import logging
+
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render,redirect
@@ -8,6 +10,8 @@ from django.views import generic
 from django.contrib import messages
 
 from .models import Choice, Question, Vote
+
+logger = logging.getLogger(__name__)
 
 # Getting ip address from user(could be manipulated by request).
 def get_client_ip(request):
@@ -83,12 +87,12 @@ def vote(request, question_id):
     """
 
     this_user = request.user
-    print("current user is: ", this_user.id, "login", this_user.username)
-    print("Real name: ", this_user.first_name)
     question = get_object_or_404(Question, pk=question_id)
+    logger.info("Vote submitted for poll #{0}".format(question_id))
 
     if not question.can_vote():
         # prevent voting on end question
+        logger.warning("Attempt to vote on ended question #{0}".format(question_id))
         return HttpResponseRedirect(reverse("polls:index"))
     try:
         selected_choice = question.choice_set.get(pk=request.POST["choice"])
