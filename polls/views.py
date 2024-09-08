@@ -1,4 +1,5 @@
 """Module for polls application view"""
+from django.contrib.auth.decorators import login_required
 from django.db.models import F
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
@@ -44,6 +45,7 @@ class ResultsView(generic.DetailView):
     template_name = "polls/results.html"
 
 
+@login_required
 def vote(request, question_id):
     """Method for vote feature of the poll app.
     
@@ -51,6 +53,10 @@ def vote(request, question_id):
     user to index page. If poll is available, user can vote
     on poll's choice and submit it.
     """
+    # comment or delete this part after developped
+    user = request.user
+    print("current user is: ", user.id, "login", user.username)
+    print("Real name: ", user.first_name)
     question = get_object_or_404(Question, pk=question_id)
 
     if not question.can_vote():
