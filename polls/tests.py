@@ -3,8 +3,9 @@ import datetime
 from django.test import TestCase
 from django.utils import timezone
 from django.urls import reverse
+from django.contrib.auth.models import User
 
-from .models import Question, Choice
+from .models import Question
 
 
 def create_question(question_text, days):
@@ -15,12 +16,17 @@ def create_question(question_text, days):
     time = timezone.now() + datetime.timedelta(days=days)
     return Question.objects.create(question_text=question_text, pub_date=time)
 
-def create_choice(Question, vote=0):
+def create_choice(Question):
     """
     Create a choice for question with given choice_text
     """
-    choice = Question.choice_set.create(choice_text="Choice 1", votes=vote)
+    choice = Question.choice_set.create(choice_text="Choice 1")
     return choice
+
+def create_vote(choice, tester):
+    """Create vote object for choice."""
+    vote = choice.vote_set.create(user=tester)
+    return vote
 
 
 class QuestionModelTests(TestCase):
@@ -139,19 +145,33 @@ class QuestionDetailViewTests(TestCase):
 
 class QuestionResultsTest(TestCase):
     """
-    Test result page show correct vote result and can vote again.
+    Test result page show correct vote result.
     """
+    def setUp(self):
+        """Create a test user."""
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
+
     def test_result_from_voted_question(self):
         """
         The results view of a question that have been voted on is display
         """
-        question = create_question("Question", days=1)
-        choice1 = create_choice(question, 2)
-        choice2 = create_choice(question, 4)
+        question = create_question("Question", days=0)
+        choice1 = create_choice(question)
+        c1_vote1 = create_vote(choice1, self.user)
+        c1_vote2 = create_vote(choice1, self.user)
+        choice2 = create_choice(question)
+        c2_vote1 = create_vote(choice2, self.user)
+        c2_vote2 = create_vote(choice2, self.user)
+        c2_vote3 = create_vote(choice2, self.user)
+        c2_vote4 = create_vote(choice2, self.user)
 
         response = self.client.get(reverse("polls:results", args=(question.id,)))
-        self.assertContains(response, f"{choice1.choice_text} -- 2")
-        self.assertContains(response, f"{choice2.choice_text} -- 4")
+        self.assertContains(response, f"{choice1.choice_text}")
+        self.assertContains(response, f"{choice1.votes}")
+        self.assertEqual(choice1.votes, 2)
+        self.assertContains(response, f"{choice2.choice_text}")
+        self.assertContains(response, f"{choice2.votes}")
+        self.assertEqual(choice2.votes, 4)
 
 
 class VoteTests(TestCase):
@@ -159,13 +179,23 @@ class VoteTests(TestCase):
     Test of vote feature. Vote increase after being vote, vote redirect to result page after voting,
     vote without selected choice don't go through.
     """
+
+    def setUp(self):
+        """Create a test user."""
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
+
     def test_vote_choice(self):
         """
         Test if the votes increase after user vote for that choice.
         """
-        question = create_question("Question", days=1)
+        # auth bypass for testing
+        self.client.force_login(self.user)
+
+        question = create_question("Question", days=0)
         choice1 = create_choice(question)
-        
+        vote1 = create_vote(choice1, self.user)
+
+
         # Simulate voting on the choice1
         response = self.client.post(
             reverse("polls:vote", args=(question.id,)),
@@ -180,8 +210,10 @@ class VoteTests(TestCase):
         """
         Ensure that you are redirect to results page after voting.
         """
-        question = create_question("Question", days=1)
+        question = create_question("Question", days=0)
         choice1 = create_choice(question)
+
+        self.client.force_login(self.user)
 
         # Simulate voting on the choice1
         response = self.client.post(
@@ -198,9 +230,11 @@ class VoteTests(TestCase):
         redisplays the question form with an appropriate error message.
         """
         # Create a sample question and choices
-        question = create_question("Sample Question", days=1)
+        question = create_question("Sample Question", days=0)
         choice1 = create_choice(question)
         choice2 = create_choice(question)
+
+        self.client.force_login(self.user)
 
         # Simulate submitting an empty choice
         response = self.client.post(

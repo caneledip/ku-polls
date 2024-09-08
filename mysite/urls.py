@@ -21,5 +21,6 @@ from django.views.generic.base import RedirectView
 urlpatterns = [
     path('polls/', include("polls.urls")),
     path('admin/', admin.site.urls),
+    path('accounts/', include('django.contrib.auth.urls')),  # auth views
     path('', RedirectView.as_view(url='/polls/')),
 ]
