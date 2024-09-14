@@ -35,6 +35,7 @@ class IndexView(generic.ListView):
 
     def get_queryset(self):
         """Return the last five published questions."""
+        logger.info("Access Polls index")
         return Question.objects.filter(pub_date__lte=timezone.now()).order_by("-pub_date")[:5]
 
 
@@ -88,16 +89,18 @@ def vote(request, question_id):
 
     this_user = request.user
     question = get_object_or_404(Question, pk=question_id)
-    logger.info("Vote submitted for poll #{0}".format(question_id))
+    logger.info("Vote submitted for poll #{0}".format(question_id, this_user.username))
 
     if not question.can_vote():
         # prevent voting on end question
-        logger.warning("Attempt to vote on ended question #{0}".format(question_id))
+        logger.warning("Attempt to vote on unavailable question #{0}".format(question_id))
         return HttpResponseRedirect(reverse("polls:index"))
     try:
+        logger.info("Question {0} vote for choice {1}".format(q, choice_id))
         selected_choice = question.choice_set.get(pk=request.POST["choice"])
     except(KeyError, Choice.DoesNotExist):
         # Redisplay the question voting form.
+        logger.warning("Invalid question id {0} or choice id {1}".format(question_id,choice_id))
         return render(
             request,
             "polls/detail.html",
