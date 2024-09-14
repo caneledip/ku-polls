@@ -5,6 +5,7 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
 
+
 class Question(models.Model):
     """
     Question model. Contain text of the question and it published date.
@@ -56,12 +57,12 @@ class Choice(models.Model):
     def __str__(self) -> str:
         """Return choice text of the choice."""
         return str(self.choice_text)
-    
+
     @property
     def votes(self):
         """Return vote count for this choice."""
         return self.vote_set.count()
-    
+
 
 class Vote(models.Model):
     """Record a choice for a question made by a user."""

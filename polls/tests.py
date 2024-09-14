@@ -16,11 +16,11 @@ def create_question(question_text, days):
     time = timezone.now() + datetime.timedelta(days=days)
     return Question.objects.create(question_text=question_text, pub_date=time)
 
-def create_choice(Question):
+def create_choice(question):
     """
     Create a choice for question with given choice_text
     """
-    choice = Question.choice_set.create(choice_text="Choice 1")
+    choice = question.choice_set.create(choice_text="Choice 1")
     return choice
 
 def create_vote(choice, tester):

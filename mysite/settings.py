@@ -96,6 +96,10 @@ DATABASES = {
                     default="sqlite:///{'db.sqlite3'}",
                     cast=db_url
                 ),
+     'test': {
+         'ENGINE': 'django.db.backends.sqlite3',
+         'NAME': ':memory:',  # Use an in-memory database for testing
+         },
      }
 
 # Password validation
