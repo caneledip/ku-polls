@@ -163,5 +163,10 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+        'polls': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
     },
 }
