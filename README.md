@@ -1,6 +1,6 @@
 ## KU Polls: Online Survey Questions 
 [![Style checking](https://github.com/caneledip/ku-polls/actions/workflows/style-checking.yml/badge.svg)](https://github.com/caneledip/ku-polls/actions/workflows/style-checking.yml)
-[![Python application](https://github.com/caneledip/ku-polls/actions/workflows/polls-testing.yml/badge.svg)](https://github.com/caneledip/ku-polls/actions/workflows/polls-testing.yml)
+[![Django CI](https://github.com/caneledip/ku-polls/actions/workflows/django.yml/badge.svg)](https://github.com/caneledip/ku-polls/actions/workflows/django.yml)
 
 An application to conduct online polls and surveys based
 on the [Django Tutorial project](https://docs.djangoproject.com/en/5.1/intro/tutorial01/), with
