@@ -100,17 +100,22 @@ def vote(request, question_id):
 
     user_ip = get_client_ip(request)
 
-    logger.info(f"User {this_user.username} ({this_user.first_name} {this_user.last_name}) voted from IP {user_ip} on question {question_id}")
+    logger.info("User %s (%s %s) voted from IP %s on question %s",
+                this_user.username, this_user.first_name, this_user.last_name, user_ip, question_id)
 
     if not question.can_vote():
         # prevent voting on end question
-        logger.warning(f"User {this_user.username} tried to vote on a closed poll {question_id}")
+        logger.warning("User %s tried to vote on a closed poll %s",
+                this_user.username, question_id)
+
         return HttpResponseRedirect(reverse("polls:index"))
     try:
         selected_choice = question.choice_set.get(pk=request.POST["choice"])
     except(KeyError, Choice.DoesNotExist):
         # Redisplay the question voting form.
-        logger.warning(f"User {this_user.username} failed to select a valid choice for question {question_id}")
+        logger.warning("User %s failed to select a valid choice for question %s",
+                this_user.username, question_id)
+
         return render(
             request,
             "polls/detail.html",
@@ -128,11 +133,14 @@ def vote(request, question_id):
         vote.save()
         messages.success(request,
                          f'Your Vote for "{question.question_text}" have been updated to "{selected_choice.choice_text}".')
-        logger.info(f"User {this_user.username} changed their vote for question {question_id} to '{selected_choice.choice_text}'")
+        logger.info("User %s changed their vote for question %s to '%s'",
+             this_user.username, question_id, selected_choice.choice_text)
+
     except Vote.DoesNotExist:
         vote = Vote(user=this_user, choice=selected_choice)
         messages.success(request, f"Vote for '{selected_choice.choice_text}' success.")
-        logger.info(f"User have vote for {selected_choice.choice_text}")
+        logger.info("User have vote for %s",
+                    selected_choice.choice_text)
 
     # Always return an HttpResponseRedirect after successfully dealing
     # with POST data. This prevents data from being posted twice if a

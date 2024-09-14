@@ -34,8 +34,8 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 
 # ALLOWED_HOSTS is a comma-separated list of hosts that can access the app.
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', 
-                       default='localhost,127.0.0.1', 
+ALLOWED_HOSTS = config('ALLOWED_HOSTS',
+                       default='localhost,127.0.0.1',
                        cast=Csv())
 
 
@@ -92,14 +92,9 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 
 DATABASES = {
      # use cast=db_url requires package dj-database-url
-     'default': config('DATABASE_URL', 
-                    default="sqlite:///{'db.sqlite3'}",
-                    cast=db_url
-                ),
-     'test': {
-         'ENGINE': 'django.db.backends.sqlite3',
-         'NAME': ':memory:',  # Use an in-memory database for testing
-         },
+     'default': config('DATABASE_URL',
+                       default="sqlite:///{'db.sqlite3'}",
+                       cast=db_url),
      }
 
 # Password validation
@@ -144,8 +139,8 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_REDIRECT_URL = 'polls:index' # after login, show list of polls
-LOGOUT_REDIRECT_URL = 'login' # after logout, return to login page
+LOGIN_REDIRECT_URL = 'polls:index'  # after login, show list of polls
+LOGOUT_REDIRECT_URL = 'login'  # after logout, return to login page
 
 LOGGING = {
     'version': 1,
