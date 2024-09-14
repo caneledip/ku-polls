@@ -1,27 +1,55 @@
 ## Running the Application
 
-1. Start the server in the virtual environment. 
+1. Clone github repository
+    ```
+    git clone https://github.com/caneledip/ku-polls.git
+    ```
+
+2. Change directory to ku-polls
+    ```
+    cd ku-polls
+    ```
+
+3. Create Virtual Environment
+    ```
+    python -m venv env
+    ```
+4. Start the server in the virtual environment. 
    ```
    # activate the virtual environment for this project. On Linux or MacOS:
    source env/bin/activate
 
    # on MS Windows:
-   env\Scripts\activate
-
-   # Configure virtual environment by looking at sample.env
+   env/Scripts/activate
    ```
-   This starts a web server listening on port 8000.
-
-2. Install the requirements from requirements.txt
+5. Install the requirements from requirements.txt
    ```
    pip install -r requirements.txt
    ```
-3. Load data
-    ```
-    # migrate model to create database
-    python manage.py migrate
+6. Set up environment variables
 
-    # load data from data file
+    ```
+    echo "DEBUG=False" >> .env
+    ```
+    ```
+    echo "SECRET_KEY=your_secret_key_here" >> .env
+    ```
+    ```
+    echo "TIME_ZONE=Asia/Bangkok" >> .env
+    ```
+    ```
+    echo "ALLOWED_HOSTS=localhost,127.0.0.1,::1" >> .env
+    ```
+    
+    You can set environment varialbe yourself, try looking at [sample.env](sample.env)
+
+7. Load data
+   </br>migrate model to create database
+    ```
+    python manage.py migrate
+    ```
+    load data from data file
+    ```
     python manage.py loaddata data/users.json
 
     python manage.py loaddata data/polls-v4.json
@@ -33,7 +61,7 @@
     python manage.py loaddata data/polls-v4.json data/votes-v4.json data/users.json
     ```
 
-4. Run server:
+8. Run server:
    ```
    python manage.py runserver
    ```
@@ -47,9 +75,10 @@
    python3 manage.py runserver 12345
    ```
 
-4. In a web browser, navigate to <http://localhost:8000>
+9. In a web browser, navigate to <http://localhost:8000>
 
-5. To stop the server, press CTRL-C in the terminal window. Exit the virtual environment by closing the window or by typing:
-   ```
-   deactivate
-   ```
+10. To stop the server
+</br>press CTRL-C in the terminal window. Exit the virtual environment by closing the window or by typing:
+    ```
+    deactivate
+    ```
