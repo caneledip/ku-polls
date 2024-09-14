@@ -28,14 +28,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = config('SECRET_KEY', default='your-default-secret-key-here')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
 # ALLOWED_HOSTS is a comma-separated list of hosts that can access the app.
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', 
-                       default='localhost,127.0.0.1', 
+ALLOWED_HOSTS = config('ALLOWED_HOSTS',
+                       default='localhost,127.0.0.1',
                        cast=Csv())
 
 
@@ -92,10 +92,9 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 
 DATABASES = {
      # use cast=db_url requires package dj-database-url
-     'default': config('DATABASE_URL', 
-                    default="sqlite:///{'db.sqlite3'}",
-                    cast=db_url
-                ),
+     'default': config('DATABASE_URL',
+                       default="sqlite:///{'db.sqlite3'}",
+                       cast=db_url),
      }
 
 # Password validation
@@ -140,8 +139,8 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_REDIRECT_URL = 'polls:index' # after login, show list of polls
-LOGOUT_REDIRECT_URL = 'login' # after logout, return to login page
+LOGIN_REDIRECT_URL = 'polls:index'  # after login, show list of polls
+LOGOUT_REDIRECT_URL = 'login'  # after logout, return to login page
 
 LOGGING = {
     'version': 1,
