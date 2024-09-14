@@ -10,11 +10,13 @@ from .models import Question
 
 def create_question(question_text, days):
     """
-    Create a question with the given 'question_text' and published the given number of 'days'
-    offset to now (negative for question published in the past, positive for questions that have yet to be published).
+    Create a question with the given 'question_text' and published the given
+    number of 'days' offset to now (negative for question published in the past,
+    positive for questions that have yet to be published).
     """
     time = timezone.now() + datetime.timedelta(days=days)
     return Question.objects.create(question_text=question_text, pub_date=time)
+
 
 def create_choice(question):
     """
@@ -22,6 +24,7 @@ def create_choice(question):
     """
     choice = question.choice_set.create(choice_text="Choice 1")
     return choice
+
 
 def create_vote(choice, tester):
     """Create vote object for choice."""
@@ -36,7 +39,8 @@ class QuestionModelTests(TestCase):
     """
     def test_was_published_recently_with_future_question(self):
         """
-        was_published_recently() returns False for question whose pub_date is in the future.
+        was_published_recently() returns False for question whose pub_date
+        is in the future.
         """
         time = timezone.now() + datetime.timedelta(days=30)
         future_question = Question(pub_date = time)
@@ -44,7 +48,8 @@ class QuestionModelTests(TestCase):
 
     def test_was_published_recently_with_old_question_after_1_day(self):
         """
-        was_published_recently() returns False for questions whose pub_date is older than 1 day.
+        was_published_recently() returns False for questions whose pub_date
+        is older than 1 day.
         """
         time = timezone.now() - datetime.timedelta(days=1, seconds=1)
         old_question = Question(pub_date=time)
@@ -52,7 +57,8 @@ class QuestionModelTests(TestCase):
 
     def test_was_published_recently_with_old_question_within_q_day(self):
         """
-        was_published_recently() returns True for questions whose pub_date is within the last day.
+        was_published_recently() returns True for questions whose pub_date is
+        within the last day.
         """
         time = timezone.now() - datetime.timedelta(hours=23, minutes=59, seconds=59)
         recent_question = Question(pub_date=time)
@@ -197,7 +203,7 @@ class VoteTests(TestCase):
 
 
         # Simulate voting on the choice1
-        response = self.client.post(
+        self.client.post(
             reverse("polls:vote", args=(question.id,)),
             {"choice": choice1.id}
         )
@@ -222,7 +228,8 @@ class VoteTests(TestCase):
         )
 
         # Check if it redirects to the results page
-        self.assertRedirects(response, reverse("polls:results", args=(question.id,)))
+        self.assertRedirects(response, reverse("polls:results",
+                                               args=(question.id,)))
 
     def test_vote_without_selecting_choice(self):
         """
@@ -231,19 +238,19 @@ class VoteTests(TestCase):
         """
         # Create a sample question and choices
         question = create_question("Sample Question", days=0)
-        choice1 = create_choice(question)
-        choice2 = create_choice(question)
 
         self.client.force_login(self.user)
 
         # Simulate submitting an empty choice
+        # Use the correct URL for voting and don't select choice
         response = self.client.post(
-            reverse("polls:vote", args=(question.id,)),  # Use the correct URL for voting
-            {}  # No choice selected
+            reverse("polls:vote", args=(question.id,)),
+            {}
         )
 
         # Check that the form is redisplayed with an error message
-        self.assertEqual(response.status_code, 200)  # Ensure status code is 200 OK
+        # Ensure status code is 200 OK
+        self.assertEqual(response.status_code, 200)
         # check contain from &#x27; (html encoding of "'")
         self.assertContains(response, "You didn&#x27;t select a choice.")
         self.assertTemplateUsed(response, "polls/detail.html")
@@ -252,7 +259,7 @@ class VoteTests(TestCase):
 class QuestionIsPublished(TestCase):
     """
     Test is_published method in Question Model.
-    
+
     is_published should return True if question was published on or before
     current time, and should return False if question pub_date is in the
     future.
@@ -275,7 +282,7 @@ class QuestionIsPublished(TestCase):
 
 class TestCanVote(TestCase):
     """Test can_vote to check polls availability.
-    
+
     can_vote return True when the poll is published and it is
     not end, and should return False if it is not in voting
     period."""

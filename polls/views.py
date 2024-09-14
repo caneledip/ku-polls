@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.signals import user_logged_in, user_logged_out, user_login_failed
 from django.dispatch import receiver
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render,redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.utils import timezone
 from django.views import generic
@@ -16,6 +16,7 @@ from django.views import generic
 from .models import Choice, Question, Vote
 
 logger = logging.getLogger(__name__)
+
 
 # Getting ip address from user(could be manipulated by request).
 def get_client_ip(request):
@@ -30,7 +31,7 @@ def get_client_ip(request):
 
 class IndexView(generic.ListView):
     """A generic view for index page.
-    
+
     It show last 5 published polls question order by
     publication date.
     """
@@ -44,7 +45,7 @@ class IndexView(generic.ListView):
 
 class DetailView(generic.DetailView):
     """A generic view for poll detail page.
-    
+
     Contain method for filtering only published question.
     """
     model = Question
@@ -55,7 +56,7 @@ class DetailView(generic.DetailView):
         Excludes any questions that aren't published yet.
         """
         return Question.objects.filter(pub_date__lte=timezone.now())
-    
+
     def get(self, request, *args, **kwargs):
         question = self.get_object()
 
@@ -85,7 +86,7 @@ class ResultsView(generic.DetailView):
 @login_required
 def vote(request, question_id):
     """Method for vote feature of the poll app.
-    
+
     If the question can not be vote, interaction will return
     user to index page. If poll is available, user can vote
     on poll's choice and submit it.
@@ -103,7 +104,7 @@ def vote(request, question_id):
 
     if not question.can_vote():
         # prevent voting on end question
-        logger.warning(f"User {user.username} tried to vote on a closed poll {question_id}")
+        logger.warning(f"User {this_user.username} tried to vote on a closed poll {question_id}")
         return HttpResponseRedirect(reverse("polls:index"))
     try:
         selected_choice = question.choice_set.get(pk=request.POST["choice"])
@@ -130,13 +131,14 @@ def vote(request, question_id):
         logger.info(f"User {this_user.username} changed their vote for question {question_id} to '{selected_choice.choice_text}'")
     except Vote.DoesNotExist:
         vote = Vote(user=this_user, choice=selected_choice)
-        messages.success(request,f"Vote for '{selected_choice.choice_text}' success.")
+        messages.success(request, f"Vote for '{selected_choice.choice_text}' success.")
         logger.info(f"User have vote for {selected_choice.choice_text}")
 
     # Always return an HttpResponseRedirect after successfully dealing
     # with POST data. This prevents data from being posted twice if a
     # user hits the Back button.
     return HttpResponseRedirect(reverse("polls:results", args=(question.id,)))
+
 
 def signup(request):
     """View for users registration page."""
@@ -155,13 +157,14 @@ def signup(request):
     else:
         # create a user form and display it the signup page
         form = UserCreationForm()
-    return render(request, 'registration/signup.html',{'form': form})
+    return render(request, 'registration/signup.html', {'form': form})
+
 
 @receiver(user_logged_in)
 def log_login_event(sender, request, user, **kwargs):
     """
     Logs an info message when user login.
-    
+
     Args:
         sender: Model class that send the signal.
         request: Http request object.
@@ -169,6 +172,7 @@ def log_login_event(sender, request, user, **kwargs):
     """
     user_ip = get_client_ip(request)
     logger.info(f"User {user} logged in from {user_ip}")
+
 
 @receiver(user_logged_out)
 def log_logged_out_event(sender, request, user, **kwargs):
@@ -191,7 +195,7 @@ def log_login_failed_event(sender, credentials, request, **kwargs):
 
     Args:
         sender: Model class that send the signal.
-        credentials: 
+        credentials: Credentials given during failed login attempt.
         request: Http request object.
         user: User object
     """
