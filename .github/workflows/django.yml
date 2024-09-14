@@ -33,4 +33,4 @@ jobs:
         echo "ALLOWED_HOSTS=localhost,127.0.0.1,::1" >> .env
     - name: Run Tests
       run: |
-        python manage.py test tests
+        python manage.py test
