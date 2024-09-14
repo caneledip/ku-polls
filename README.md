@@ -8,20 +8,25 @@ additional features.
 
 ## Installation
 
-- [Installation](../../wiki/Installation)
+- [Installation](Installation.md)
 
 ## Running the Application
 
 ```
 python manage.py runserver
 ```
+Must already done an installation according to Installation.md
+If not please go to installation guide above.
 
 ## Project Documents
 
 All project documents are in the [Project Wiki](../../wiki/Home).
 
 - [Vision Statement](../../wiki/Vision%20Statement)
+- [Domain Model](../../wiki/Domain%Model)
 - [Requirements](../../wiki/Requirements)
 - [Project Plan](../../wiki/Project%20Plan)
 - [Iteration 1](../../wiki/Iteration%201)
 - [Iteration 2](../../wiki/Iteration%202)
+- [Iteration 3](../../wiki/Iteration%203)
+- [Iteration 4](../../wiki/Iteration%204)
