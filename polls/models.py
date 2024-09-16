@@ -7,9 +7,7 @@ from django.contrib.auth.models import User
 
 
 class Question(models.Model):
-    """
-    Question model. Contain text of the question and it published date.
-    """
+    """Question contain text of the question and it published date."""
 
     question_text = models.CharField(max_length=200)
     pub_date = models.DateTimeField("date published", default=timezone.now)
@@ -34,10 +32,7 @@ class Question(models.Model):
         return self.pub_date <= timezone.now()
 
     def can_vote(self):
-        """Method for checking poll availability.
-
-        Return True if current datetime is in a voting period.
-        """
+        """Poll can be vote if it currently in between published and end date."""
         if self.end_date is None:
             return self.pub_date <= timezone.now()
         return self.pub_date <= timezone.now() <= self.end_date
@@ -66,8 +61,10 @@ class Choice(models.Model):
 
 class Vote(models.Model):
     """Record a choice for a question made by a user."""
+
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     choice = models.ForeignKey(Choice, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
+        """Show vote's owner and choice text user vote for in sentence."""
         return f'Vote by {self.user.username} for {self.choice.choice_text}'
