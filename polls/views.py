@@ -7,7 +7,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.signals import user_logged_in, user_logged_out, user_login_failed
 from django.dispatch import receiver
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.utils import timezone
@@ -58,7 +58,14 @@ class DetailView(generic.DetailView):
         return Question.objects.filter(pub_date__lte=timezone.now())
 
     def get(self, request, *args, **kwargs):
-        question = self.get_object()
+        try:
+            # Use get_object_or_404 to fetch the question or raise 404
+            question = get_object_or_404(Question, pk=kwargs.get('pk'))
+        except Http404:
+            # Log the event and show an error message to the user
+            messages.error(request, "The poll does not exist.")
+            logger.warning("Attempted to access non-existent poll.")
+            return redirect('polls:index')
 
         # Can you vote on this question?
         if not question.can_vote():
@@ -135,7 +142,6 @@ def vote(request, question_id):
         vote = Vote.objects.get(user=this_user, choice__question=question)
         vote.choice = selected_choice
         # save change to new vote or existing vote.
-        vote.save()
         messages.success(request,
                          f'Your Vote for "{question.question_text}" have been updated to "{selected_choice.choice_text}".')
         logger.info("User %s changed their vote for question %s to '%s'",
@@ -146,6 +152,7 @@ def vote(request, question_id):
         messages.success(request, f"Vote for '{selected_choice.choice_text}' success.")
         logger.info("User have vote for %s",
                     selected_choice.choice_text)
+    vote.save()
 
     # Always return an HttpResponseRedirect after successfully dealing
     # with POST data. This prevents data from being posted twice if a
