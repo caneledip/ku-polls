@@ -26,9 +26,6 @@
 {%csrf_token%}
 <fieldset>
     <legend><h1>{{question.question_text}}</h1></legend>
-    {% if not question.can_vote %}
-        <h2>Polls not available!</h2>
-    {% endif %}
     {% if error_message %}
         <p><strong>{{error_message}}</strong></p>
     {% endif %}
@@ -44,3 +41,4 @@
 <input type="submit" value="Vote">
 </form>
 <button class="button" onclick="window.location.href='{% url 'polls:index' %}'">Polls Index</button>
+<a href="{% url 'polls:results' question.id %}" class="button">Result</a>

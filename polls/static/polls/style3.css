@@ -53,3 +53,37 @@ a {
 .button:hover {
     background-color: #0056b3; /* Darker background on hover */
 }
+
+.poll-results {
+    width: 60%;
+    margin: 20px auto;
+    border-collapse: collapse; /* Remove gaps between table cells */
+    background-color: rgba(255, 255, 255, 0.3); /* Background for the table */
+    border: 1px solid #ccc;
+    border-radius: 15px; /* Give round edge to table */
+    overflow: hidden; /* Prevent overflow from table*/
+}
+
+.poll-results th, .poll-results td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: left;
+}
+
+.poll-results th {
+    background-color: #007bff;
+    color: white;
+}
+
+.poll-results td {
+    font-size: 1.2rem;
+    background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+}
+
+.vote-count {
+    text-align: right;
+}
+
+.choice-text {
+    text-align: left;
+}

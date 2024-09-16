@@ -1,13 +1,17 @@
-"""Module for polls application view"""
+"""Module for polls application view."""
 import logging
 
 from django.contrib.auth import login, authenticate
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.signals import user_logged_in, user_logged_out, user_login_failed
+from django.contrib.auth.signals import (
+    user_logged_in,
+    user_logged_out,
+    user_login_failed
+    )
 from django.dispatch import receiver
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.utils import timezone
@@ -35,6 +39,7 @@ class IndexView(generic.ListView):
     It show last 5 published polls question order by
     publication date.
     """
+
     template_name = "polls/index.html"
     context_object_name = "latest_question_list"
 
@@ -48,17 +53,24 @@ class DetailView(generic.DetailView):
 
     Contain method for filtering only published question.
     """
+
     model = Question
     template_name = "polls/detail.html"
 
     def get_queryset(self):
-        """
-        Excludes any questions that aren't published yet.
-        """
+        """Excludes any questions that aren't published yet."""
         return Question.objects.filter(pub_date__lte=timezone.now())
 
     def get(self, request, *args, **kwargs):
-        question = self.get_object()
+        """Check for poll availability and user previous vote."""
+        try:
+            # Use get_object_or_404 to fetch the question or raise 404
+            question = get_object_or_404(Question, pk=kwargs.get('pk'))
+        except Http404:
+            # Log the event and show an error message to the user
+            messages.error(request, "The poll does not exist.")
+            logger.warning("Attempted to access non-existent poll.")
+            return redirect('polls:index')
 
         # Can you vote on this question?
         if not question.can_vote():
@@ -78,14 +90,15 @@ class DetailView(generic.DetailView):
 
 
 class ResultsView(generic.DetailView):
-    """A view of results page."""
+    """A view containing logic for results page."""
+
     model = Question
     template_name = "polls/results.html"
 
 
 @login_required
 def vote(request, question_id):
-    """Method for vote feature of the poll app.
+    """Vote a choice selected by user of the poll app.
 
     If the question can not be vote, interaction will return
     user to index page. If poll is available, user can vote
@@ -94,7 +107,6 @@ def vote(request, question_id):
     Args:
         question_id : integre id of polls question
     """
-
     this_user = request.user
     question = get_object_or_404(Question, pk=question_id)
 
@@ -135,17 +147,19 @@ def vote(request, question_id):
         vote = Vote.objects.get(user=this_user, choice__question=question)
         vote.choice = selected_choice
         # save change to new vote or existing vote.
-        vote.save()
         messages.success(request,
-                         f'Your Vote for "{question.question_text}" have been updated to "{selected_choice.choice_text}".')
+                         'Your Vote for "%s" have been updated to "%s".',
+                         question.question_text, selected_choice.choice_text)
         logger.info("User %s changed their vote for question %s to '%s'",
                     this_user.username, question_id, selected_choice.choice_text)
 
     except Vote.DoesNotExist:
         vote = Vote(user=this_user, choice=selected_choice)
-        messages.success(request, f"Vote for '{selected_choice.choice_text}' success.")
+        messages.success(request,
+                         f"Vote for '{selected_choice.choice_text}' success.")
         logger.info("User have vote for %s",
                     selected_choice.choice_text)
+    vote.save()
 
     # Always return an HttpResponseRedirect after successfully dealing
     # with POST data. This prevents data from being posted twice if a
@@ -155,7 +169,6 @@ def vote(request, question_id):
 
 def signup(request):
     """View for users registration page."""
-
     if request.method == "POST":
         form = UserCreationForm(request.POST)
         if form.is_valid():
@@ -176,7 +189,7 @@ def signup(request):
 @receiver(user_logged_in)
 def log_login_event(sender, request, user, **kwargs):
     """
-    Logs an info message when user login.
+    Give an info message when user login.
 
     Args:
         sender: Model class that send the signal.
@@ -190,7 +203,7 @@ def log_login_event(sender, request, user, **kwargs):
 @receiver(user_logged_out)
 def log_logged_out_event(sender, request, user, **kwargs):
     """
-    Logs an info message when a user logs out.
+    Give an info message when a user logs out.
 
     Args:
         sender: Model class that send the signal.
@@ -204,7 +217,7 @@ def log_logged_out_event(sender, request, user, **kwargs):
 @receiver(user_login_failed)
 def log_login_failed_event(sender, credentials, request, **kwargs):
     """
-    Logs a warning message when a login attempt fails.
+    Give a warning message when a login attempt fails.
 
     Args:
         sender: Model class that send the signal.
