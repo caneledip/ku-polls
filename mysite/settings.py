@@ -92,9 +92,14 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 
 DATABASES = {
      # use cast=db_url requires package dj-database-url
-     'default': config('DATABASE_URL',
-                       default="sqlite:///{'db.sqlite3'}",
-                       cast=db_url),
+     "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": config("DATABASE_NAME", default="pollsdb"),
+        "USER": config("DATABASE_USER", default="pollsapp"),
+        "PASSWORD": config("DATABASE_PASSWORD", default="password"),
+        "HOST": config("DATABASE_HOST", default="localhost"),
+        "PORT": config("DATABASE_PORT", default="5432")
+    }
      }
 
 # Password validation

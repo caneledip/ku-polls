@@ -1,27 +1,22 @@
+{% extends "base.html" %}
 {% load static %}
 
+{% block title %}
+Available Polls
 <link rel="stylesheet" href="{% static 'polls/style.css'%}">
+{% endblock %}
 
 {% if user.is_authenticated %}
     Welcome back, {{ user.username }}
-    <form action="{% url 'logout'%}" method="POST">
+    <form action="{% url 'logout' %}" method="POST">
         {% csrf_token %}
         <button type="submit">Log Out</button>
     </form>
 {% else %}
-    Please <a href="{% url 'login'%}?next={{request.path}}">Login</a>
+    Please <a href="{% url 'login' %}?next={{request.path}}">Login</a>
 {% endif %}
 
-{% if messages %}
-    <ul>
-        {% for message in messages %}
-            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
-                {{ message }}
-            </li>
-        {% endfor %}
-    </ul>
-{% endif %}
-
+{% block content %}
 {% if latest_question_list %}
     <ul>
     {% for question in latest_question_list %}
@@ -41,3 +36,4 @@
 {% else %}
     <p>No polls are available.</p>
 {% endif %}
+{% endblock %}

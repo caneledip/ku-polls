@@ -36,7 +36,7 @@ def get_client_ip(request):
 class IndexView(generic.ListView):
     """A generic view for index page.
 
-    It show last 5 published polls question order by
+    It show published polls question order by
     publication date.
     """
 
@@ -44,7 +44,7 @@ class IndexView(generic.ListView):
     context_object_name = "latest_question_list"
 
     def get_queryset(self):
-        """Return the last five published questions."""
+        """Return the published questions."""
         return Question.objects.filter(pub_date__lte=timezone.now()).order_by("-pub_date")
 
 
@@ -105,7 +105,7 @@ def vote(request, question_id):
     on poll's choice and submit it.
 
     Args:
-        question_id : integre id of polls question
+        question_id : integer id of polls question
     """
     this_user = request.user
     question = get_object_or_404(Question, pk=question_id)
@@ -148,8 +148,7 @@ def vote(request, question_id):
         vote.choice = selected_choice
         # save change to new vote or existing vote.
         messages.success(request,
-                         'Your Vote for "%s" have been updated to "%s".',
-                         question.question_text, selected_choice.choice_text)
+                         f'Your Vote for "{question.question_text}" have been updated to "{selected_choice.choice_text}".')
         logger.info("User %s changed their vote for question %s to '%s'",
                     this_user.username, question_id, selected_choice.choice_text)
 
